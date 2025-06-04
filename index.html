@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Toy Shop</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #04ad56; color: #333; }
+    h1, h2 { text-align: center; color: #fff; }
+    button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; }
+    .toggle-btns { text-align: center; margin-bottom: 20px; }
+    .toy-card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+    .toy-card img { width: 100%; max-height: 160px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; }
+    #toy-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .toy-card button { background: #0077cc; color: #fff; }
+    .toy-card button:hover { background: #005fa3; }
+    #cart { background: #fff; padding: 20px; border-radius: 12px; margin-top: 40px; }
+    #cart div { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    #cart button { background: #cc0000; color: #fff; padding: 4px 10px; }
+    #cart button:hover { background: #a60000; }
+    form { background: #fff; padding: 20px; border-radius: 10px; display: flex;flex-direction: column; max-width:400px;gap: 10px; flex-wrap: wrap; margin-top: 30px;margin: 30px auto; }
+    form input, form button {  padding: 10px 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+  <div class="toggle-btns">
+    <button onclick="showSection('shop')">🏪 Toy Shop</button>
+    <button onclick="showSection('customer')">👤 Customer Register</button>
+  </div>
+
+  <!-- Toy Shop Section -->
+  <div id="shopSection">
+    <h1>Welcome to the Toy Shop</h1>
+    <div id="toy-list"></div>
+
+    <div id="cart"><h2>🛒 Cart</h2><p>Your cart is empty.</p></div>
+
+    <h2>Add New Toy</h2>
+    <form id="toyForm">
+      <input name="name" placeholder="Toy Name" required>
+      <input name="categoryId" placeholder="Category ID" required>
+      <input name="price" type="number" placeholder="Price" step="0.01" required>
+      <input name="image" type="url" placeholder="Image URL" required>
+      <button type="submit">Add Toy</button>
+    </form>
+  </div>
+
+  <!-- Customer Register Section -->
+  <div id="customerSection" style="display: none;">
+    <h2>Register Customer</h2>
+    <form id="customerForm">
+      <input name="name" placeholder="Name" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="password" type="password" placeholder="Password" required>
+      <input name="address" placeholder="Address">
+      <input name="phone" type="tel" placeholder="Phone">
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <script>
+    // Toggle Views
+    
+    function showSection(section) {
+      document.getElementById('shopSection').style.display = section === 'shop' ? 'block' : 'none';
+      document.getElementById('customerSection').style.display = section === 'customer' ? 'block' : 'none';
+    }
+
+    const cart = [];
+
+    const renderCart = () => {
+      const cartDiv = document.getElementById('cart');
+      if (!cart.length) return cartDiv.innerHTML = '<h2>🛒 Cart</h2><p>Your cart is empty.</p>';
+
+      cartDiv.innerHTML = '<h2>🛒 Cart</h2>';
+      cart.forEach((item, i) => {
+        cartDiv.innerHTML += `<div>${item.name} — ₹${item.price}<button onclick="removeFromCart(${i})">Remove</button></div>`;
+      });
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      cartDiv.innerHTML += `<hr><strong>Total: ₹${total.toFixed(2)}</strong>`;
+    };
+
+    const removeFromCart = i => { cart.splice(i, 1); renderCart(); };
+    const addToCart = toy => { cart.push(toy); alert(`${toy.name} added to cart`); renderCart(); };
+
+    const renderToys = toys => {
+  const list = document.getElementById('toy-list');
+  list.innerHTML = '';
+  toys.forEach(toy => {
+    list.innerHTML += `
+      <div class="toy-card">
+        <img src="${toy.image}" alt="${toy.name}">
+        <h3>${toy.name}</h3>
+        <p><strong>Price:</strong> ₹${toy.price}</p>
+        <p><strong>Category:</strong> ${toy.categoryId}</p>
+        <button onclick='addToCart(${JSON.stringify(toy)})'>Add to Cart</button>
+        <button onclick='deleteToy("${toy._id}")' style="background:#cc0000; margin-left:8px;">Remove</button>
+      </div>`;
+  });
+};
+
+
+    document.getElementById('toyForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const toy = { name: f.get('name'), categoryId: f.get('categoryId'), price: +f.get('price'), image: f.get('image') };
+      try {
+        const res = await fetch('http://localhost:3000/api/toys', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(toy)
+        });
+        const data = await res.json();
+        alert(`✅ Toy "${data.name}" added!`);
+        e.target.reset();
+        const updated = await fetch('http://localhost:3000/api/toys').then(res => res.json());
+        renderToys(updated);
+      } catch (err) {
+        alert('❌ Failed to add toy'); console.error(err);
+      }
+    });
+
+    document.getElementById('customerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const f = new FormData(this);
+      const customer = {
+        name: f.get('name'),
+        email: f.get('email'),
+        password: f.get('password'),
+        address: f.get('address'),
+        phone: f.get('phone')
+      };
+      try {
+        const res = await fetch('http://localhost:3000/api/customers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(customer)
+        });
+        const data = await res.json();
+        alert(`✅ Registered ${data.name}`);
+        this.reset();
+        showSection('shop');
+      } catch (err) {
+        alert('❌ Failed to register'); console.error(err);
+      }
+    });
+    async function deleteToy(id) {
+  if (!confirm('Are you sure you want to delete this toy?')) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/toys/${id}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    alert(data.message || 'Toy deleted');
+    
+    // Refresh toy list
+    const updated = await fetch('http://localhost:3000/api/toys').then(res => res.json());
+    renderToys(updated);
+  } catch (err) {
+    alert('Failed to delete toy');
+    console.error(err);
+  }
+}
+
+    fetch('http://localhost:3000/api/toys')
+      .then(res => res.json())
+      .then(data => renderToys(data))
+      .catch(err => console.error('❌ Failed to fetch toys:', err));
+  </script>
+
+</body>
+</html>

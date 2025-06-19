@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Groups</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html">Contacts</a>
+    <a href="group.html">Groups</a>
+    <a href="message.html">Messages</a>
+  </nav>
+  <div class="container">
+    <h1>Groups</h1>
+    <form id="groupForm">
+      <input type="text" id="groupName" placeholder="Group name" required />
+      <button type="submit">Create Group</button>
+    </form>
+    <ul id="groupList"></ul>
+  </div>
+  <script>
+    async function loadGroups() {
+      const res = await fetch("http://localhost:5000/groups");
+      const groups = await res.json();
+      document.getElementById("groupList").innerHTML = groups.map(g => `
+        <li>${g.name}</li>`).join("");
+    }
+    document.getElementById("groupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("groupName").value;
+      await fetch("http://localhost:5000/groups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      e.target.reset();
+      loadGroups();
+    });
+    loadGroups();
+  </script>
+</body>
+</html>

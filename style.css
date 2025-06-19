@@ -1,0 +1,126 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7fa;
+  padding: 20px;
+  
+  color: #333;
+}
+
+/* Navigation Bar */
+nav {
+  background-color: #2c3e50;
+  padding: 12px 20px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  border-radius: 5px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Container */
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: #ffffff;
+  padding: 30px 35px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+/* Headings */
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2c3e50;
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+input, textarea {
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+button {
+  width: fit-content;
+  padding: 10px 18px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #3498db;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* List */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: #ecf0f1;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+li span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}

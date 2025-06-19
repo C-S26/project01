@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Messages</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html">Contacts</a>
+    <a href="group.html">Groups</a>
+    <a href="message.html">Messages</a>
+  </nav>
+  <div class="container">
+    <h1>Send Message</h1>
+    <select id="recipientType">
+      <option value="contact">Contact</option>
+      <option value="group">Group</option>
+    </select>
+    <select id="recipient"></select>
+    <form id="messageForm">
+      <textarea id="messageText" placeholder="Your message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <ul id="messageList"></ul>
+  </div>
+  <script>
+    const recipientType = document.getElementById("recipientType");
+    const recipientSelect = document.getElementById("recipient");
+    const messageList = document.getElementById("messageList");
+
+    async function loadRecipients() {
+      const type = recipientType.value;
+      const endpoint = type === "group" ? "groups" : "contacts";
+      const res = await fetch(`http://localhost:5000/${endpoint}`);
+      const data = await res.json();
+      recipientSelect.innerHTML = data.map(d =>
+        `<option value="${d._id}">${d.name || d.email}</option>`
+      ).join("");
+    }
+
+    document.getElementById("messageForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const type = recipientType.value;
+      const id = recipientSelect.value;
+      const msg = document.getElementById("messageText").value;
+      await fetch("http://localhost:5000/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: msg,
+          ...(type === 'group' ? { group: id } : { to: id })
+        })
+      });
+      e.target.reset();
+      loadMessages();
+    });
+
+    async function loadMessages() {
+      const res = await fetch("http://localhost:5000/messages");
+      const messages = await res.json();
+      messageList.innerHTML = messages.map(m =>
+        `<li>${m.message} (${m.to?.name || m.group?.name || 'Unknown'})</li>`
+      ).join("");
+    }
+
+    recipientType.addEventListener("change", loadRecipients);
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadRecipients();
+      loadMessages();
+    });
+  </script>
+</body>
+</html>

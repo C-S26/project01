@@ -23,7 +23,7 @@
   </div>
   <script>
     async function loadContacts() {
-      const res = await fetch("http://localhost:5000/contacts");
+      const res = await fetch("https://project01-e1ak.onrender.com/contacts");
       const contacts = await res.json();
       document.getElementById("contactList").innerHTML = contacts.map(c => `
         <li>${c.name} - ${c.email} - ${c.phone}
@@ -31,7 +31,7 @@
         </li>`).join("");
     }
     async function deleteContact(id) {
-      await fetch(`http://localhost:5000/contacts/${id}`, { method: "DELETE" });
+      await fetch(`https://c-s26.github.io/project01/group.html/contacts/${id}`, { method: "DELETE" });
       loadContacts();
     }
     document.getElementById("contactForm").addEventListener("submit", async (e) => {
@@ -39,7 +39,7 @@
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
       const phone = document.getElementById("phone").value;
-      await fetch("http://localhost:5000/contacts", {
+      await fetch("https://project01-e1ak.onrender.com/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, phone }),

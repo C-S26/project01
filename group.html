@@ -21,7 +21,7 @@
   </div>	
   <script>	
     async function loadGroups() {	
-      const res = await fetch("http://localhost:5000/groups");	
+      const res = await fetch("https://project01-e1ak.onrender.com/groups");	
       const groups = await res.json();	
       document.getElementById("groupList").innerHTML = groups.map(g => `	
         <li>${g.name}</li>`).join("");	
@@ -29,7 +29,7 @@
     document.getElementById("groupForm").addEventListener("submit", async (e) => {	
       e.preventDefault();	
       const name = document.getElementById("groupName").value;	
-      await fetch("http://localhost:5000/groups", {	
+      await fetch("https://project01-e1ak.onrender.com/groups", {	
         method: "POST",	
         headers: { "Content-Type": "application/json" },	
         body: JSON.stringify({ name }),	

@@ -32,7 +32,7 @@
     async function loadRecipients() {
       const type = recipientType.value;
       const endpoint = type === "group" ? "groups" : "contacts";
-      const res = await fetch(`http://localhost:5000/${endpoint}`);
+      const res = await fetch(`https://project01-e1ak.onrender.com/${endpoint}`);
       const data = await res.json();
       recipientSelect.innerHTML = data.map(d =>
         `<option value="${d._id}">${d.name || d.email}</option>`
@@ -44,7 +44,7 @@
       const type = recipientType.value;
       const id = recipientSelect.value;
       const msg = document.getElementById("messageText").value;
-      await fetch("http://localhost:5000/messages", {
+      await fetch("https://project01-e1ak.onrender.com/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -57,7 +57,7 @@
     });
 
     async function loadMessages() {
-      const res = await fetch("http://localhost:5000/messages");
+      const res = await fetch("https://project01-e1ak.onrender.com/messages");
       const messages = await res.json();
       messageList.innerHTML = messages.map(m =>
         `<li>${m.message} (${m.to?.name || m.group?.name || 'Unknown'})</li>`
